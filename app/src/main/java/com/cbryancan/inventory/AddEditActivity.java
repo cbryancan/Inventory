@@ -1,18 +1,28 @@
 package com.cbryancan.inventory;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.app.LoaderManager;
 import android.content.Loader;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -21,13 +31,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.cbryancan.inventory.data.InventoryContract;
 
-import static com.cbryancan.inventory.R.id.sale;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.net.URI;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
+
 
 public class AddEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int EXISTING_PRODUCT_LOADER = 0;
@@ -42,9 +58,21 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
 
     private Spinner mSaleSpinner;
 
+    private ImageView mImageView;
+
     private boolean mProductHasChanged = false;
 
     private int mSale;
+
+    private Bitmap mBitmap;
+
+    private Button mPickPictureButton;
+
+    private static final String CAMERA_DIR = "/dcim/";
+
+    private Uri mUri;
+
+    private String mImageUriString;
 
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -78,11 +106,26 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
         mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
         mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
         mSaleSpinner = (Spinner) findViewById(R.id.spinner_sale);
+        mImageView = (ImageView) findViewById(R.id.item_image);
+
+        mPickPictureButton = (Button) findViewById(R.id.select_picture_button);
+
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mSaleSpinner.setOnTouchListener(mTouchListener);
+        mImageView.setOnTouchListener(mTouchListener);
+
+
+        mPickPictureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openImageSelector();
+            }
+        });
+
+        requestPermissions();
 
         setupSpinner();
     }
@@ -100,11 +143,11 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selection = (String) parent.getItemAtPosition(position);
 
-                    if (selection.equals("Not on Sale")) {
-                        mSale = InventoryContract.ProductEntry.SALE_NOT_ON_SALE;
-                    } else if (selection.equals("On Sale")) {
-                        mSale = InventoryContract.ProductEntry.SALE_ON_SALE;
-                    }
+                if (selection.equals("Not on Sale")) {
+                    mSale = InventoryContract.ProductEntry.SALE_NOT_ON_SALE;
+                } else if (selection.equals("On Sale")) {
+                    mSale = InventoryContract.ProductEntry.SALE_ON_SALE;
+                }
 
             }
 
@@ -132,6 +175,7 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, quantityString);
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE, mSale);
+        values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC, mImageUriString);
 
 
         if (mCurrentProductUri == null) {
@@ -272,13 +316,14 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the delete was successful and we can display a toast.
-                Toast.makeText(this,"Successfully Deleted!",
+                Toast.makeText(this, "Successfully Deleted!",
                         Toast.LENGTH_SHORT).show();
             }
         }
 
         Intent intent = new Intent(AddEditActivity.this, ListActivity.class);
-        startActivity(intent);    }
+        startActivity(intent);
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -288,7 +333,8 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_NAME,
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY,
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE,
-                InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE };
+                InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE,
+        InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -302,24 +348,30 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor == null || cursor.getCount() < 1) {
-            return;}
+            return;
+        }
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_NAME);
             int quantityColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY);
             int priceColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE);
             int saleColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE);
+            int picColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             String price = cursor.getString(priceColumnIndex);
-int saleStatus = cursor.getInt(saleColumnIndex);
+            int saleStatus = cursor.getInt(saleColumnIndex);
+            String imageUriString = cursor.getString(picColumnIndex);
+            Uri imageUri= Uri.parse(imageUriString);
+            Bitmap imageBitmap = getBitmapFromUri(imageUri);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(price);
+            mImageView.setImageBitmap(imageBitmap);
 
             switch (saleStatus) {
                 case InventoryContract.ProductEntry.SALE_NOT_ON_SALE:
@@ -338,5 +390,77 @@ int saleStatus = cursor.getInt(saleColumnIndex);
         mQuantityEditText.setText("");
         mPriceEditText.setText("");
         mSaleSpinner.setSelection(0);
+        mImageView.setImageResource(android.R.color.transparent);
+    }
+
+    public void requestPermissions() {
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    2);
+
+        }
+    }
+
+
+
+
+    public void openImageSelector() {
+        Intent intent;
+
+        if (Build.VERSION.SDK_INT < 19) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+        }
+
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 0);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+
+
+            if (resultData != null) {
+                mUri = resultData.getData();
+
+                mBitmap = getBitmapFromUri(mUri);
+                Log.e("Image URI: ", mUri.toString());
+                mImageUriString = mUri.toString();
+                mImageView.setImageBitmap(mBitmap);
+
+    }
+
+}private Bitmap getBitmapFromUri(Uri uri) {
+        ParcelFileDescriptor parcelFileDescriptor = null;
+        try {
+            parcelFileDescriptor =
+                    getContentResolver().openFileDescriptor(uri, "r");
+            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+            Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+            parcelFileDescriptor.close();
+            return image;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (parcelFileDescriptor != null) {
+                    parcelFileDescriptor.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
+
+
+
+
+

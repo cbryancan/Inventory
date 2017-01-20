@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import com.cbryancan.inventory.data.InventoryContract;
 
+import static android.R.attr.value;
+
 
 public class ListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -102,7 +104,8 @@ public class ListActivity extends AppCompatActivity implements LoaderManager.Loa
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_NAME,
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY,
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE,
-                InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE
+                InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE,
+                InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC,
         };
 
         return new CursorLoader(this,
@@ -130,6 +133,7 @@ mCursorAdaptor.swapCursor(null);
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, 10);
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE, "$15.00");
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE, InventoryContract.ProductEntry.SALE_NOT_ON_SALE);
+
 
         getContentResolver().insert(InventoryContract.ProductEntry.CONTENT_URI, values);
     }

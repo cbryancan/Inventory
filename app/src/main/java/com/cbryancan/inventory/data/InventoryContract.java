@@ -35,6 +35,8 @@ public class InventoryContract {
 
         public final static String COLUMN_PRODUCT_PRICE = "price";
 
+        public final static String COLUMN_PRODUCT_PIC = "picture";
+
         public static final int SALE_NOT_ON_SALE = 0;
 
         public static final int SALE_ON_SALE = 1;

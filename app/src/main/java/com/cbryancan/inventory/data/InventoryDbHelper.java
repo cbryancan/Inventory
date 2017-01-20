@@ -23,7 +23,8 @@ public static final String LOG_TAG = InventoryDbHelper.class.getSimpleName();
                 + InventoryContract.ProductEntry.COLUMN_PRODUCT_NAME + " TEXT NOT NULL, "
                 + InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE + " TEXT, "
                 + InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY + " INTEGER NOT NULL, "
-                + InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE + " INTEGER NOT NULL DEFAULT 0);";
+                + InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE + " INTEGER NOT NULL DEFAULT 0, "
+                + InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC + " TEXT NOT NULL);";
 
         // Execute the SQL statement
         db.execSQL(SQL_CREATE_INVENTORY_TABLE);

@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
+import static com.cbryancan.inventory.R.id.price;
+
 
 public class InventoryProvider extends ContentProvider {
 
@@ -105,6 +107,10 @@ public class InventoryProvider extends ContentProvider {
             throw new IllegalArgumentException("Product requires valid quantity");
         }
 
+        String pic = values.getAsString(InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC);
+        if (pic == null) {
+            throw new IllegalArgumentException("Product requires picture");}
+
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         long id = database.insert(InventoryContract.ProductEntry.TABLE_NAME, null, values);
@@ -184,6 +190,13 @@ public class InventoryProvider extends ContentProvider {
         if (values.containsKey(InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE)) {
             String price = values.getAsString(InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE);
             if (price == null) {
+                throw new IllegalArgumentException("Product requires a price");
+            }
+        }
+
+        if (values.containsKey(InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC)) {
+            String pic = values.getAsString(InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC);
+            if (pic == null) {
                 throw new IllegalArgumentException("Product requires a price");
             }
         }

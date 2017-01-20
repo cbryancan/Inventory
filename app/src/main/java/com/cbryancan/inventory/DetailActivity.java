@@ -6,17 +6,25 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cbryancan.inventory.data.InventoryContract;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
+
+import static android.R.attr.data;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -32,6 +40,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     private TextView mSaleText;
 
+    private ImageView mImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +55,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mQuantityText = (TextView) findViewById(R.id.detail_quantity);
         mPriceText = (TextView) findViewById(R.id.detail_price);
         mSaleText = (TextView) findViewById(R.id.detail_sale);
+        mImageView = (ImageView) findViewById(R.id.item_image);
 
         Button EditButton = (Button) findViewById(R.id.edit_item);
         Button DeleteButton = (Button) findViewById(R.id.delete_item);
@@ -107,7 +118,8 @@ incrementQuantity();
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_NAME,
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY,
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE,
-                InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE};
+                InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE,
+                InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC};
 
 
         return new CursorLoader(this,
@@ -130,6 +142,7 @@ incrementQuantity();
             int quantityColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY);
             int priceColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE);
             int saleColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE);
+            int picColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC);
 
             String name = cursor.getString(nameColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
@@ -142,10 +155,18 @@ incrementQuantity();
                 saleString = "On Sale";
             }
 
+            String imageUriString = cursor.getString(picColumnIndex);
+            Uri imageUri = Uri.parse(imageUriString);
+            Log.e("uri string", imageUri.toString());
+           Bitmap imageBitmap = getBitmapFromUri(imageUri);
+
+
+
             mNameText.setText(name);
             mQuantityText.setText(Integer.toString(quantity));
             mPriceText.setText(price);
             mSaleText.setText(saleString);
+            mImageView.setImageBitmap(imageBitmap);
 
         }
     }
@@ -188,6 +209,29 @@ private void incrementQuantity(){
             getContentResolver().update(mCurrentProductUri, cv, null, null);
         } else{
             return;
+        }
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri) {
+        ParcelFileDescriptor parcelFileDescriptor = null;
+        try {
+            parcelFileDescriptor =
+                    getContentResolver().openFileDescriptor(uri, "r");
+            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+            Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+            parcelFileDescriptor.close();
+            return image;
+
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (parcelFileDescriptor != null) {
+                    parcelFileDescriptor.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
