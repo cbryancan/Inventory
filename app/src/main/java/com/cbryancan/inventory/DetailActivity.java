@@ -1,8 +1,10 @@
 package com.cbryancan.inventory;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -55,7 +57,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mQuantityText = (TextView) findViewById(R.id.detail_quantity);
         mPriceText = (TextView) findViewById(R.id.detail_price);
         mSaleText = (TextView) findViewById(R.id.detail_sale);
-        mImageView = (ImageView) findViewById(R.id.item_image);
+        mImageView = (ImageView) findViewById(R.id.image_view_detail);
 
         Button EditButton = (Button) findViewById(R.id.edit_item);
         Button DeleteButton = (Button) findViewById(R.id.delete_item);
@@ -76,8 +78,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         DeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteProduct();
-            }
+showDeleteConfirmationDialog();            }
         });
 
         OrderButton.setOnClickListener(new View.OnClickListener() {
@@ -233,5 +234,28 @@ private void incrementQuantity(){
                 e.printStackTrace();
             }
         }
+    }
+
+    private void showDeleteConfirmationDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the pet.
+                deleteProduct();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

@@ -10,8 +10,4 @@
         android:title="Delete All Products"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_insert_dummy_data"
-        android:title="Insert Data"
-        app:showAsAction="never" />
 </menu>

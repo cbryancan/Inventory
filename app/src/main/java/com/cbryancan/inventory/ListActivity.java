@@ -1,9 +1,11 @@
 package com.cbryancan.inventory;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -88,10 +90,7 @@ public class ListActivity extends AppCompatActivity implements LoaderManager.Loa
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
         case R.id.action_delete_all_entries:
-                deleteAllProducts();
-                return true;
-            case R.id.action_insert_dummy_data:
-                insertProduct();
+                showDeleteConfirmationDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -126,15 +125,26 @@ mCursorAdaptor.swapCursor(data);
 mCursorAdaptor.swapCursor(null);
     }
 
-    private void insertProduct() {
+    private void showDeleteConfirmationDialog() {
 
-        ContentValues values = new ContentValues();
-        values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_NAME, "Widget 1");
-        values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, 10);
-        values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE, "$15.00");
-        values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE, InventoryContract.ProductEntry.SALE_NOT_ON_SALE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete ALL items?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the pet.
+                deleteAllProducts();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
 
-
-        getContentResolver().insert(InventoryContract.ProductEntry.CONTENT_URI, values);
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

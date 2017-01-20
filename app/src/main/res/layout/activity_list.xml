@@ -36,7 +36,7 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif-medium"
             android:paddingTop="16dp"
-            android:text="Empty Text View"
+            android:text="No Items in the Inventory"
             android:textAppearance="?android:textAppearanceMedium"/>
 
         <TextView
@@ -47,7 +47,7 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif"
             android:paddingTop="8dp"
-            android:text="Empty Text View"
+            android:text="Press the + Button to Add an Item"
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="#A2AAB0"/>
     </RelativeLayout>
