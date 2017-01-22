@@ -3,7 +3,6 @@ package com.cbryancan.inventory;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,18 +17,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import com.cbryancan.inventory.data.InventoryContract;
 
-import static android.R.attr.value;
+import com.cbryancan.inventory.data.InventoryContract;
 
 
 public class ListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int PRODUCT_LOADER = 0;
 
-    ProductCursorAdapter mCursorAdaptor;
+    private ProductCursorAdapter mCursorAdaptor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +43,6 @@ public class ListActivity extends AppCompatActivity implements LoaderManager.Loa
         });
 
         ListView productListView = (ListView) findViewById(R.id.list);
-        Button sellButton = (Button) findViewById(R.id.sell_item);
 
         View emptyView = findViewById(R.id.empty_view);
         productListView.setEmptyView(emptyView);
@@ -74,22 +70,18 @@ public class ListActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void deleteAllProducts() {
         int rowsDeleted = getContentResolver().delete(InventoryContract.ProductEntry.CONTENT_URI, null, null);
-        Log.v("ListActivity", rowsDeleted + " rows deleted from pet database");
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_catalog.xml file.
-        // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_list, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
-        case R.id.action_delete_all_entries:
+            case R.id.action_delete_all_entries:
                 showDeleteConfirmationDialog();
                 return true;
         }
@@ -117,12 +109,12 @@ public class ListActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-mCursorAdaptor.swapCursor(data);
+        mCursorAdaptor.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-mCursorAdaptor.swapCursor(null);
+        mCursorAdaptor.swapCursor(null);
     }
 
     private void showDeleteConfirmationDialog() {
@@ -131,7 +123,6 @@ mCursorAdaptor.swapCursor(null);
         builder.setMessage("Are you sure you want to delete ALL items?");
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
                 deleteAllProducts();
             }
         });
@@ -143,7 +134,6 @@ mCursorAdaptor.swapCursor(null);
             }
         });
 
-        // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }

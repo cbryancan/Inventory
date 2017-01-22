@@ -26,8 +26,6 @@ import com.cbryancan.inventory.data.InventoryContract;
 import java.io.FileDescriptor;
 import java.io.IOException;
 
-import static android.R.attr.data;
-
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int EXISTING_PRODUCT_LOADER = 0;
@@ -78,7 +76,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         DeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-showDeleteConfirmationDialog();            }
+                showDeleteConfirmationDialog();
+            }
         });
 
         OrderButton.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +86,7 @@ showDeleteConfirmationDialog();            }
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 String nameString = mNameText.getText().toString();
                 intent.setType("text/html");
-                intent.putExtra(Intent.EXTRA_EMAIL,new String[] { "supplier@supplierco.com" });
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"supplier@supplierco.com"});
                 intent.putExtra(Intent.EXTRA_SUBJECT, "Reorder " + nameString);
                 intent.putExtra(Intent.EXTRA_TEXT, "Please send us a new shipment of " + nameString);
 
@@ -98,7 +97,7 @@ showDeleteConfirmationDialog();            }
         ReceiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-incrementQuantity();
+                incrementQuantity();
             }
         });
 
@@ -159,13 +158,12 @@ incrementQuantity();
             String imageUriString = cursor.getString(picColumnIndex);
             Uri imageUri = Uri.parse(imageUriString);
             Log.e("uri string", imageUri.toString());
-           Bitmap imageBitmap = getBitmapFromUri(imageUri);
+            Bitmap imageBitmap = getBitmapFromUri(imageUri);
 
 
-
-            mNameText.setText(name);
-            mQuantityText.setText(Integer.toString(quantity));
-            mPriceText.setText(price);
+            mNameText.setText("Product Name: " + name);
+            mQuantityText.setText(Integer.toString(quantity) + " in stock");
+            mPriceText.setText("Product Price: " + price);
             mSaleText.setText(saleString);
             mImageView.setImageBitmap(imageBitmap);
 
@@ -182,34 +180,34 @@ incrementQuantity();
     }
 
     private void deleteProduct() {
-            getContentResolver().delete(mCurrentProductUri, null, null);
+        getContentResolver().delete(mCurrentProductUri, null, null);
 
-                Toast.makeText(this,"Successfully Deleted!",
-                        Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Successfully Deleted!",
+                Toast.LENGTH_SHORT).show();
 
 
         Intent intent = new Intent(DetailActivity.this, ListActivity.class);
-        startActivity(intent);    }
-
-private void incrementQuantity(){
-    int quantity = Integer.valueOf(mQuantityText.getText().toString());
-    quantity ++;
-    ContentValues cv = new ContentValues();
-    cv.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, quantity);
-
-
-    getContentResolver().update(mCurrentProductUri, cv, null, null);
+        startActivity(intent);
     }
 
-    public void decrementQuantity(){
+    private void incrementQuantity() {
         int quantity = Integer.valueOf(mQuantityText.getText().toString());
-        quantity --;
-        if(quantity>=0) {
+        quantity++;
+        ContentValues cv = new ContentValues();
+        cv.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, quantity);
+
+
+        getContentResolver().update(mCurrentProductUri, cv, null, null);
+    }
+
+    private void decrementQuantity() {
+        int quantity = Integer.valueOf(mQuantityText.getText().toString());
+        quantity--;
+        if (quantity >= 0) {
             ContentValues cv = new ContentValues();
             cv.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, quantity);
             getContentResolver().update(mCurrentProductUri, cv, null, null);
-        } else{
-            return;
+
         }
     }
 
@@ -242,7 +240,6 @@ private void incrementQuantity(){
         builder.setMessage("Are you sure you want to delete?");
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
                 deleteProduct();
             }
         });
@@ -254,7 +251,6 @@ private void incrementQuantity(){
             }
         });
 
-        // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }

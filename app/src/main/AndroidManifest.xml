@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_assignment_turned_in_black_48dp"
@@ -18,26 +17,21 @@
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".AddEditActivity"
-            android:parentActivityName=".ListActivity"
->
+            android:parentActivityName=".ListActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ListActivity" />
         </activity>
         <activity
             android:name=".DetailActivity"
-            android:parentActivityName=".ListActivity"
-            >
+            android:parentActivityName=".ListActivity">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ListActivity" />
@@ -48,9 +42,7 @@
             android:authorities="com.cbryancan.inventory"
             android:exported="false"
             android:grantUriPermissions="true">
-
-
-    </provider>
+        </provider>
     </application>
 
 </manifest>

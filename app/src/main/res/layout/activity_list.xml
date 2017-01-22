@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ListActivity">
 
     <ListView
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/list">
-    </ListView>
+        android:layout_height="wrap_content"></ListView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -18,9 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/ic_add_white_48dp"
         android:layout_margin="16dp"
-        />
+        android:src="@drawable/ic_add_white_48dp" />
 
     <!-- Empty view for the list -->
     <RelativeLayout
@@ -37,7 +35,7 @@
             android:fontFamily="sans-serif-medium"
             android:paddingTop="16dp"
             android:text="No Items in the Inventory"
-            android:textAppearance="?android:textAppearanceMedium"/>
+            android:textAppearance="?android:textAppearanceMedium" />
 
         <TextView
             android:id="@+id/empty_subtitle_text"
@@ -49,6 +47,6 @@
             android:paddingTop="8dp"
             android:text="Press the + Button to Add an Item"
             android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="#A2AAB0"/>
+            android:textColor="#A2AAB0" />
     </RelativeLayout>
 </RelativeLayout>

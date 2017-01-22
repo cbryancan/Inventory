@@ -15,7 +15,7 @@ import com.cbryancan.inventory.data.InventoryContract;
 
 import static com.cbryancan.inventory.R.id.quantity;
 
-public class ProductCursorAdapter extends CursorAdapter {
+class ProductCursorAdapter extends CursorAdapter {
 
 
     public ProductCursorAdapter(Context context, Cursor c) {
@@ -57,7 +57,7 @@ public class ProductCursorAdapter extends CursorAdapter {
         }
 
         nameTextView.setText(productName);
-        quantityTextView.setText(String.valueOf(productQuantity));
+        quantityTextView.setText(String.valueOf(productQuantity) + " in stock");
         priceTextView.setText(productPrice);
         saleTextView.setText(saleString);
 
@@ -70,9 +70,9 @@ public class ProductCursorAdapter extends CursorAdapter {
                     int newItemQuantity = productQuantity - 1;
                     cv.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, newItemQuantity);
                     view.getContext().getContentResolver().update(currentUri, cv, null, null);
-                } else {
-                    return;
-                }            }
+
+                }
+            }
         });
 
     }

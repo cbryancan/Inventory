@@ -4,66 +4,92 @@
     android:id="@+id/activity_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.cbryancan.inventory.DetailActivity"
-    android:orientation="vertical">
+    tools:context="com.cbryancan.inventory.DetailActivity">
 
     <ImageView
+        android:id="@+id/image_view_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/image_view_detail"/>
+        android:layout_gravity="center" />
 
     <TextView
+        android:id="@+id/detail_name"
+        style="@style/Base.TextAppearance.AppCompat.Headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name"
-        android:id="@+id/detail_name" />
+        android:text="Name" />
 
     <TextView
+        android:id="@+id/detail_quantity"
+        style="@style/Base.TextAppearance.AppCompat.Headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Quantity"
-        android:id="@+id/detail_quantity" />
+        android:text="Quantity" />
+
     <TextView
+        android:id="@+id/detail_price"
+        style="@style/Base.TextAppearance.AppCompat.Headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Price"
-        android:id="@+id/detail_price" />
+        android:text="Price" />
+
     <TextView
+        android:id="@+id/detail_sale"
+        style="@style/Base.TextAppearance.AppCompat.Headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sale Status"
-        android:id="@+id/detail_sale" />
+        android:text="Sale Status" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:id="@+id/edit_item"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit Item"
-        android:id="@+id/edit_item"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Order Item"
-        android:id="@+id/order_item"/>
+        android:text="Edit Item" />
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Delete Item"
-        android:id="@+id/delete_item"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sell Item"
-        android:id="@+id/sell_item"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Recieve Item"
-        android:id="@+id/recieve_item"/>
+        android:orientation="horizontal">
 
+
+        <Button
+            android:id="@+id/order_item"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Order Item" />
+
+        <Button
+            android:id="@+id/delete_item"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Delete Item" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/sell_item"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sell Item" />
+
+        <Button
+            android:id="@+id/recieve_item"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Recieve Item" />
+    </LinearLayout>
 
 </LinearLayout>

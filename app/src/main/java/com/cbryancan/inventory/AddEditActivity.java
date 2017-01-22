@@ -1,7 +1,6 @@
 package com.cbryancan.inventory;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
@@ -37,51 +36,29 @@ import android.widget.Toast;
 
 import com.cbryancan.inventory.data.InventoryContract;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
-import java.net.URI;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 
 
 public class AddEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int EXISTING_PRODUCT_LOADER = 0;
-
-    private Uri mCurrentProductUri;
-
-    private EditText mNameEditText;
-
-    private EditText mQuantityEditText;
-
-    private EditText mPriceEditText;
-
-    private Spinner mSaleSpinner;
-
-    private ImageView mImageView;
-
-    private boolean mProductHasChanged = false;
-
-    private int mSale;
-
-    private Bitmap mBitmap;
-
-    private Button mPickPictureButton;
-
     private static final String CAMERA_DIR = "/dcim/";
-
-    private Uri mUri;
-
-    private String mImageUriString;
-
-
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+    private Uri mCurrentProductUri;
+    private EditText mNameEditText;
+    private EditText mQuantityEditText;
+    private EditText mPriceEditText;
+    private Spinner mSaleSpinner;
+    private ImageView mImageView;
+    private boolean mProductHasChanged = false;
+    private final View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mProductHasChanged = true;
             return false;
         }
     };
+    private int mSale;
+    private String mImageUriString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +70,6 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
 
         if (mCurrentProductUri == null) {
             setTitle("Add a Product");
-
 
         } else {
 
@@ -108,15 +84,13 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
         mSaleSpinner = (Spinner) findViewById(R.id.spinner_sale);
         mImageView = (ImageView) findViewById(R.id.item_image);
 
-        mPickPictureButton = (Button) findViewById(R.id.select_picture_button);
-
+        Button mPickPictureButton = (Button) findViewById(R.id.select_picture_button);
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mSaleSpinner.setOnTouchListener(mTouchListener);
         mImageView.setOnTouchListener(mTouchListener);
-
 
         mPickPictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,7 +122,6 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
                 } else if (selection.equals("On Sale")) {
                     mSale = InventoryContract.ProductEntry.SALE_ON_SALE;
                 }
-
             }
 
             @Override
@@ -169,14 +142,12 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
             return;
         }
 
-
         ContentValues values = new ContentValues();
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_NAME, nameString);
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, quantityString);
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE, mSale);
         values.put(InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC, mImageUriString);
-
 
         if (mCurrentProductUri == null) {
 
@@ -200,7 +171,6 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
                 Toast.makeText(this, "Product Not Updated!",
                         Toast.LENGTH_SHORT).show();
             } else {
-                // Otherwise, the update was successful and we can display a toast.
                 Toast.makeText(this, "Product Updated!",
                         Toast.LENGTH_SHORT).show();
             }
@@ -209,8 +179,6 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_editor.xml file.
-        // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_addedit, menu);
         return true;
     }
@@ -250,7 +218,6 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // User clicked "Discard" button, navigate to parent activity.
                                 NavUtils.navigateUpFromSameTask(AddEditActivity.this);
                             }
                         };
@@ -274,11 +241,9 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
-
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-
 
     private void showDeleteConfirmationDialog() {
 
@@ -286,7 +251,6 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
         builder.setMessage("Are you sure you want to delete?");
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
                 deleteProduct();
             }
         });
@@ -298,24 +262,19 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
-        // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     private void deleteProduct() {
-        // Only perform the delete if this is an existing pet.
         if (mCurrentProductUri != null) {
 
             int rowsDeleted = getContentResolver().delete(mCurrentProductUri, null, null);
 
-            // Show a toast message depending on whether or not the delete was successful.
             if (rowsDeleted == 0) {
-                // If no rows were deleted, then there was an error with the delete.
                 Toast.makeText(this, "Failed to delete!",
                         Toast.LENGTH_SHORT).show();
             } else {
-                // Otherwise, the delete was successful and we can display a toast.
                 Toast.makeText(this, "Successfully Deleted!",
                         Toast.LENGTH_SHORT).show();
             }
@@ -334,15 +293,14 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY,
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE,
                 InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE,
-        InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC};
+                InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC};
 
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                mCurrentProductUri,         // Query the content URI for the current pet
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                null);                  // Default sort order
+        return new CursorLoader(this,
+                mCurrentProductUri,
+                projection,
+                null,
+                null,
+                null);
     }
 
     @Override
@@ -351,23 +309,20 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
             return;
         }
         if (cursor.moveToFirst()) {
-            // Find the columns of pet attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_NAME);
             int quantityColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_QUANTITY);
             int priceColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_PRICE);
             int saleColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_SALE);
             int picColumnIndex = cursor.getColumnIndex(InventoryContract.ProductEntry.COLUMN_PRODUCT_PIC);
 
-            // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             String price = cursor.getString(priceColumnIndex);
             int saleStatus = cursor.getInt(saleColumnIndex);
             String imageUriString = cursor.getString(picColumnIndex);
-            Uri imageUri= Uri.parse(imageUriString);
+            Uri imageUri = Uri.parse(imageUriString);
             Bitmap imageBitmap = getBitmapFromUri(imageUri);
 
-            // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(price);
@@ -393,7 +348,7 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
         mImageView.setImageResource(android.R.color.transparent);
     }
 
-    public void requestPermissions() {
+    private void requestPermissions() {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -408,9 +363,7 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
     }
 
 
-
-
-    public void openImageSelector() {
+    private void openImageSelector() {
         Intent intent;
 
         if (Build.VERSION.SDK_INT < 19) {
@@ -423,21 +376,24 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
         intent.setType("image/*");
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), 0);
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
 
 
-            if (resultData != null) {
-                mUri = resultData.getData();
+        if (resultData != null) {
+            Uri mUri = resultData.getData();
 
-                mBitmap = getBitmapFromUri(mUri);
-                Log.e("Image URI: ", mUri.toString());
-                mImageUriString = mUri.toString();
-                mImageView.setImageBitmap(mBitmap);
+            Bitmap mBitmap = getBitmapFromUri(mUri);
+            Log.e("Image URI: ", mUri.toString());
+            mImageUriString = mUri.toString();
+            mImageView.setImageBitmap(mBitmap);
+
+        }
 
     }
 
-}private Bitmap getBitmapFromUri(Uri uri) {
+    private Bitmap getBitmapFromUri(Uri uri) {
         ParcelFileDescriptor parcelFileDescriptor = null;
         try {
             parcelFileDescriptor =
