@@ -40,9 +40,9 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 
 
+
 public class AddEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int EXISTING_PRODUCT_LOADER = 0;
-    private static final String CAMERA_DIR = "/dcim/";
     private Uri mCurrentProductUri;
     private EditText mNameEditText;
     private EditText mQuantityEditText;
@@ -137,8 +137,9 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
         String priceString = mPriceEditText.getText().toString().trim();
 
         if (mCurrentProductUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(quantityString) &&
-                TextUtils.isEmpty(quantityString) && mSale == InventoryContract.ProductEntry.SALE_NOT_ON_SALE) {
+                TextUtils.isEmpty(nameString) || TextUtils.isEmpty(quantityString) ||
+                TextUtils.isEmpty(priceString) && mSale == InventoryContract.ProductEntry.SALE_NOT_ON_SALE) {
+            Toast.makeText(this, "You must complete all fields!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -319,8 +320,8 @@ public class AddEditActivity extends AppCompatActivity implements LoaderManager.
             int quantity = cursor.getInt(quantityColumnIndex);
             String price = cursor.getString(priceColumnIndex);
             int saleStatus = cursor.getInt(saleColumnIndex);
-            String imageUriString = cursor.getString(picColumnIndex);
-            Uri imageUri = Uri.parse(imageUriString);
+            mImageUriString = cursor.getString(picColumnIndex);
+            Uri imageUri = Uri.parse(mImageUriString);
             Bitmap imageBitmap = getBitmapFromUri(imageUri);
 
             mNameEditText.setText(name);

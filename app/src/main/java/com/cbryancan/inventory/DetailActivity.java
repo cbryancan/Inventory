@@ -162,7 +162,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
 
             mNameText.setText("Product Name: " + name);
-            mQuantityText.setText(Integer.toString(quantity) + " in stock");
+            mQuantityText.setText(Integer.toString(quantity));
             mPriceText.setText("Product Price: " + price);
             mSaleText.setText(saleString);
             mImageView.setImageBitmap(imageBitmap);
